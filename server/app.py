@@ -20,9 +20,7 @@ class UserTable(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100),unique=True ,nullable=False)
     password = db.Column(db.String(100), nullable=False)
-def find_name(name):
-    user = UserTable.query.filter_by(name=name)
-    
+
 @app.route('/')
 def home():
     if 'username' in session:
@@ -55,8 +53,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         user = UserTable.query.filter_by(name=username, password=password).first()
-        # 이 부분은 실제로는 데이터베이스와 비교해야 합니다.
-
+        
         if user:
             session['username'] = username
             flash('로그인 성공!', 'success')
@@ -87,4 +84,4 @@ def add_post():
 if __name__ == '__main__':
     with app.app_context():  # 애플리케이션 컨텍스트 생성
         db.create_all()
-    app.run(debug=True)
+    app.run()
