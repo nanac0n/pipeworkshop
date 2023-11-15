@@ -8,11 +8,11 @@ phases:
     commands:
       - echo pre_Build completed on `date`
 
-artifacts:
+  artifacts:
   files:
     - server/**/*
     
-post_build:
+  post_build:
     commands:
       - echo Build completed on `date`
 
