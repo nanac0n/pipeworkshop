@@ -1,20 +1,13 @@
 version: 0.2
 
 phases:
-  install:
+  build:
     commands:
-      - echo install completed on `date`
-  pre_build:
-    commands:
-      - echo pre_Build completed on `date`
+      - echo "Build commands go here"
 
-  artifacts:
-  files:
-    - server/*
-    
-  post_build:
-    commands:
-      - echo Build completed on `date`
+artifacts:
+  files: 
+    - 'server/**/*'
 
 cache:
   paths:
