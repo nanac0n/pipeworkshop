@@ -10,7 +10,7 @@ phases:
 
   artifacts:
   files:
-    - server/**/*
+    - server/*
     
   post_build:
     commands:
