@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo install completed on `date`
+  pre_build:
+    commands:
+      - echo pre_Build completed on `date`
+
+artifacts:
+  files:
+    - server/**/*
+    
+post_build:
+    commands:
+      - echo Build completed on `date`
+
+cache:
+  paths:
+    - flask_upload/
