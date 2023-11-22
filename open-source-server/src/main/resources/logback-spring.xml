@@ -1,0 +1,22 @@
+<configuration>
+
+    <appender name="MARIADB_DB" class="com.ctrlcv.er_sentinel_manager.component.MariaDBAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>Info</level>
+        </filter>
+    </appender>
+
+
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d %-5level %logger{35} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="Info">
+        <appender-ref ref="Console"/>
+        <appender-ref ref="MARIADB_DB" />
+    </root>
+
+</configuration>
