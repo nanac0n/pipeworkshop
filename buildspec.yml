@@ -7,7 +7,7 @@ phases:
 
 artifacts:
   files: 
-    - 'server/**/*'
+    - 'open-source-server/**/*'
   name: MyArtifact-${CODEBUILD_RESOLVED_SOURCE_VERSION}-${CODEBUILD_START_TIME}
 cache:
   paths:
