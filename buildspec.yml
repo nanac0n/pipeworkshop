@@ -3,7 +3,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17
+      java: corretto11
   pre_build:
     commands:
       - echo Nothing to do in the pre_build phase...
@@ -20,4 +20,3 @@ artifacts:
     - target/webgoat-2023.6-SNAPSHOT.jar
     - appspec.yml
     - start.sh
-    
