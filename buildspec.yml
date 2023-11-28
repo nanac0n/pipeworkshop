@@ -20,3 +20,4 @@ artifacts:
     - target/webgoat-2023.6-SNAPSHOT.jar
     - appspec.yml
     - start.sh
+    
