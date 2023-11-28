@@ -1,14 +1,22 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      java: corretto17
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase...
   build:
     commands:
-      - echo "Build commands go here"
-
+      - echo Build started on `date`
+      - pwd && ls && whoami
+      - ./mvnw clean install
+  post_build:
+    commands:
+      - echo Build completed on `date`
 artifacts:
-  files: 
-    - 'open-source-server/**/*'
-  name: MyArtifact-${CODEBUILD_RESOLVED_SOURCE_VERSION}-${CODEBUILD_START_TIME}
-cache:
-  paths:
-    - flask_upload/
+  files:
+    - target/webgoat-2023.6-SNAPSHOT.jar
+    - appspec.yml
+    - start.sh
