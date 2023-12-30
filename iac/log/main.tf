@@ -86,7 +86,7 @@ resource "aws_subnet" "tf-subnet" {
 
 #application load balancer 생성
 resource "aws_lb" "tf-alb"{
-  name = "albTerraform"
+  name = "aws-alb"
   internal = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.tf-lb-sg.id]
