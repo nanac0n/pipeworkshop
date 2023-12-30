@@ -42,7 +42,7 @@ resource "aws_s3_bucket" "tf-aws-waf-s3-bucket"{
   force_destroy = true
 }
 
-resource "aws_s3_bucket" "tf-aws-s3-bucket" {
+resource "aws_s3_bucket" "tf-gd-s3" {
   bucket        = "aws-gd-logs-bucket"
   force_destroy = true
 }
