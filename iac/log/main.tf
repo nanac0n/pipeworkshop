@@ -552,7 +552,7 @@ resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-p
 
 
 # CloudWatch Log Group
-resource "aws_cloudwatch_log_group" "tf-cloudtrail-to-cloudwatch-log-group {
+resource "aws_cloudwatch_log_group" "tf-cloudtrail-to-cloudwatch-log-group" {
   name = "aws-cloudtrail-to-cloudwatch-log-group"
 }
 
@@ -587,4 +587,29 @@ resource "aws_iam_role_policy" "tf-cloudwatch-iam-policy" {
   name   = "cloudwatch-policy"
   role   = aws_iam_role.tf-cloudwatch-iam-role.id
   policy = data.aws_iam_policy_document.tf-cloudwatch-iam-policy.json
+}
+
+#GuardDuty 생성
+resource "aws_guardduty_detector" "DevSecOpsDetector" {
+  count = length(data.aws_guardduty_detector.existing.id) > 0 ? 0 : 1
+
+  enable = true
+
+  datasources {
+    s3_logs {
+      enable = true
+    }
+    kubernetes {
+      audit_logs {
+        enable = false
+      }
+    }
+    malware_protection {
+      scan_ec2_instance_with_findings {
+        ebs_volumes {
+          enable = true
+        }
+      }
+    }
+  }
 }
