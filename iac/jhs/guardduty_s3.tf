@@ -77,18 +77,17 @@ output "existing_guardduty_detector_id" {
 }
 
 
-resource "aws_s3_bucket" "gd_bucket" {
-  bucket        = "guarddutys3logbucket" // bucket name
-  force_destroy = true
+data "aws_s3_bucket" "gd_logs_bucket" {
+  bucket = "aws-gd-logs-bucket"
 }
 
 
-resource "aws_s3_bucket_policy" "gd_bucket_policy" {
-  bucket = aws_s3_bucket.gd_bucket.id
+resource "aws_s3_bucket_policy" "tf-aws-gd-s3-policy" {
+  bucket = data.aws_s3_bucket.gd_logs_bucket.id
   policy = data.aws_iam_policy_document.bucket_pol.json
 }
 
-resource "aws_kms_key" "gd_key" {
+resource "aws_kms_key" "tf-gd-key" {
   description             = "Temporary key for AccTest of TF"
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.kms_pol.json
