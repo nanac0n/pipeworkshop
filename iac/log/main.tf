@@ -46,6 +46,12 @@ resource "aws_s3_bucket" "tf-aws-s3-bucket" {
   bucket        = "aws-gd-logs-bucket"
   force_destroy = true
 }
+
+# CloudTrail 로그를 저장할 S3 버킷
+resource "aws_s3_bucket" "tf-cloudtrail-s3" {
+  bucket = "aws-cloudtrail-s3"
+}
+
 #로드 밸런서 보안 그룹 생성
 resource "aws_security_group" "tf-lb-sg"{
   name = "aws-lb-sg"
