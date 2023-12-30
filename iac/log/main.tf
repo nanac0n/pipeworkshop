@@ -38,6 +38,6 @@ POLICIES
 }
 #s3버킷 생성
 resource "aws_s3_bucket" "tf-aws-s3-bucket"{
-  bucket = "aws-waf-logs-terraform-test"
+  bucket = "aws-waf-logs-bucket"
   force_destroy = true
 }
