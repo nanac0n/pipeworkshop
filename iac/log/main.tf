@@ -37,7 +37,7 @@ resource "aws_elasticsearch_domain_policy" "main"{
 POLICIES
 }
 #s3버킷 생성
-resource "aws_s3_bucket" "tf-aws-s3-bucket"{
+resource "aws_s3_bucket" "tf-aws-waf-s3-bucket"{
   bucket = "aws-waf-logs-bucket"
   force_destroy = true
 }
@@ -160,13 +160,13 @@ resource "aws_kinesis_firehose_delivery_stream" "tf-waf-firehose-stream"{
 
         parameters {
           parameter_name  = "LambdaArn"
-          parameter_value = "${aws_lambda_function.aws_waf_logs_lambda_terraform.arn}:$LATEST"
+          parameter_value = "${aws_lambda_function.tf-waf-logs-lambda.arn}:$LATEST"
         }
       }
     }
 
     s3_configuration {
-      bucket_arn = aws_s3_bucket.tf-aws-s3-bucket.arn
+      bucket_arn = aws_s3_bucket.tf-aws-waf-s3-bucket.arn
       role_arn   = aws_iam_role.tf-firehose-role.arn
       buffering_size     = 10
       buffering_interval = 400
@@ -485,11 +485,6 @@ resource "aws_wafv2_web_acl" "tf-web-acl"{
     }
   }
 
-  tags = merge(
-    local.common_tags, {
-      customer = "wafv2-web-acl"
-    }
-  )
 }
 
 resource "aws_wafv2_web_acl_association" "wafv2_association"{
