@@ -4,9 +4,13 @@ variable "guardduty_bucket_name" {
   default     = "guarddutys3logbucket"
 }
 
-variable "opensearch_host" {
-  description = "The endpoint of the OpenSearch cluster."
-  default = "https://search-<opensearch-domain-name>-<random-string>.ap-northeast-2.es.amazonaws.com"
+variable "opensearch_domain_name" {
+  description = "Name of the OpenSearch domain."
+  default = "opensearch-siem"
+}
+
+data "open_search_domain" "host_domain" {
+  domain_name = var.opensearch_domain_name
 }
 
 
@@ -67,7 +71,7 @@ resource "aws_lambda_function" "guardduty_lambda" {
     variables = {
       REGION    = "ap-northeast-2",
       SERVICE   = "es",
-      ES_HOST   = var.opensearch_host, 
+      ES_HOST   = var.host_domain.endpoint,
       INDEX     = "guardduty-logs"
     }
   }
