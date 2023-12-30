@@ -1,9 +1,7 @@
 #Web-ACL 생성
-resource "aws_wafv2_web_acl" "terraform-web-acl"{
-  name = "terraform-web-acl"
+resource "aws_wafv2_web_acl" "tf-web-acl"{
+  name = "aws-web-acl"
   scope = "REGIONAL"
-
-
   default_action {
     allow {
     }
@@ -189,40 +187,6 @@ resource "aws_wafv2_web_acl" "terraform-web-acl"{
     }
   }
 
-  #AWSManagedRulesUnixRuleSet
-#  rule{
-#    name = "AWS-AWSManagedRulesUnixRuleSet"
-#    priority = 8
-#
-#    statement {
-#      managed_rule_group_statement {
-#        name        = "AWSManagedRulesUnixRuleSet"
-#        vendor_name = "AWS"
-#      }
-#    }
-#    visibility_config{
-#      cloudwatch_metrics_enabled = false
-#      metric_name                = "AWS-AWSManagedRulesUnixRuleSet"
-#      sampled_requests_enabled   = false
-#    }
-#  }
-#  #AWSManagedRulesWindowsRuleSet
-#  rule{
-#    name = "AWS-AWSManagedRulesWindowsRuleSet"
-#    priority = 9
-#    statement {
-#      managed_rule_group_statement {
-#        name        = "AWSManagedRulesWindowsRuleSet"
-#        vendor_name = "AWS"
-#      }
-#    }
-#    visibility_config {
-#      cloudwatch_metrics_enabled = false
-#      metric_name                = "AWS-AWSManagedRulesWindowsRuleSet"
-#      sampled_requests_enabled   = false
-#    }
-#  }
-
   #속도 기반 규칙에 따라 동일 IP에서 5분에 200번 이상 접속을 요청하면 차단하는 규칙
   rule{
     name = "RateBasedRule"
@@ -254,12 +218,12 @@ resource "aws_wafv2_web_acl" "terraform-web-acl"{
 
 resource "aws_wafv2_web_acl_association" "wafv2_association"{
 
-  resource_arn = aws_lb.application-load-balancer.arn
-  web_acl_arn  = aws_wafv2_web_acl.terraform-web-acl.arn
+  resource_arn = aws_lb.tf-alb.arn
+  web_acl_arn  = aws_wafv2_web_acl.tf-web-acl.arn
 
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "wafv2_logging_configuration" {
-  log_destination_configs = [aws_kinesis_firehose_delivery_stream.waf_firehose_stream.arn]
-  resource_arn            = aws_wafv2_web_acl.terraform-web-acl.arn
+  log_destination_configs = [aws_kinesis_firehose_delivery_stream.tf-waf-firehose-stream.arn]
+  resource_arn            = aws_wafv2_web_acl.tf-web-acl.arn
 }
