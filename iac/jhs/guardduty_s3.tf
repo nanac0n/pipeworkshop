@@ -2,6 +2,10 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
+
+data "aws_s3_bucket" "gd_bucket" {
+  bucket = aws_s3_bucket.aws-gd-logs-bucket.id
+}
 data "aws_iam_policy_document" "bucket_pol" {
   statement {
     sid = "Allow PutObject"
@@ -77,13 +81,9 @@ output "existing_guardduty_detector_id" {
 }
 
 
-data "aws_s3_bucket" "gd_logs_bucket" {
-  bucket = "aws-gd-logs-bucket"
-}
-
 
 resource "aws_s3_bucket_policy" "tf-aws-gd-s3-policy" {
-  bucket = data.aws_s3_bucket.gd_logs_bucket.id
+  bucket = aws_s3_bucket.gd_bucket.id
   policy = data.aws_iam_policy_document.bucket_pol.json
 }
 
