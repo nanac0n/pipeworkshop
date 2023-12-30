@@ -1,4 +1,3 @@
-
 variable "guardduty_bucket_name" {
   description = "Name of the S3 bucket for GuardDuty logs."
   default     = "guarddutys3logbucket"
@@ -6,13 +5,16 @@ variable "guardduty_bucket_name" {
 
 variable "opensearch_domain_name" {
   description = "Name of the OpenSearch domain."
-  default = "opensearch-siem"
+  default     = "opensearch-siem"
 }
 
-data "open_search_domain" "host_domain" {
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
+data "aws_opensearch_domain" "host_domain" {
   domain_name = var.opensearch_domain_name
 }
-
 
 # IAM Role for the Lambda Function
 resource "aws_iam_role" "s3lambdatoes_role" {
@@ -32,46 +34,58 @@ resource "aws_iam_role" "s3lambdatoes_role" {
   })
 }
 
-# Attach necessary policies to the IAM role
-resource "aws_iam_role_policy_attachment" "lambda_exec" {
-  role       = aws_iam_role.s3lambdatoes_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+# Custom IAM Policy for Lambda Function
+resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
+  name        = "LambdaS3OpenSearchPolicy"
+  description = "IAM policy for Lambda to read S3 GuardDuty logs and write to OpenSearch"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObject",
+          "s3:ListBucket"
+        ],
+        Resource = [
+          "arn:aws:s3:::${var.guardduty_bucket_name}",
+          "arn:aws:s3:::${var.guardduty_bucket_name}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "es:ESHttpPost",
+          "es:ESHttpPut",
+          "es:ESHttpGet"
+        ],
+        Resource = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.opensearch_domain_name}/*"
+      }
+    ]
+  })
 }
 
-resource "aws_iam_role_policy_attachment" "s3_full_access" {
+# Policy to the IAM Role
+resource "aws_iam_role_policy_attachment" "lambda_custom_policy" {
   role       = aws_iam_role.s3lambdatoes_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "open_search_full_access" {
-  role       = aws_iam_role.s3lambdatoes_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess"
-}
-
-resource "aws_iam_role_policy_attachment" "s3_object_lambda_execution_role_policy" {
-  role       = aws_iam_role.s3lambdatoes_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonS3ObjectLambdaExecutionRolePolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "kms_provider_policy" {
-    role = aws_iam_role.s3lambdatoes_role.name
-    policy_arn = "arn:aws:iam::aws:policy/service-role/ROSAKMSProviderPolicy"
+  policy_arn = aws_iam_policy.lambda_s3_opensearch_policy.arn
 }
 
 # Lambda Function
 resource "aws_lambda_function" "guardduty_lambda" {
-  function_name = "guardduty_lambda_function"
-  handler       = "lambda_function.lambda_handler"
-  role          = aws_iam_role.s3lambdatoes_role.arn
-  runtime       = "python3.8"
+  function_name    = "guardduty_lambda_function"
+  handler          = "lambda_function.lambda_handler"
+  role             = aws_iam_role.s3lambdatoes_role.arn
+  runtime          = "python3.8"
   filename         = "${path.module}/guardduty_lambda.zip"
-  source_code_hash  = filebase64sha256("./guardduty_lambda.zip")
-  
+  source_code_hash = filebase64sha256("./guardduty_lambda.zip")
+
   environment {
     variables = {
       REGION    = "ap-northeast-2",
       SERVICE   = "es",
-      ES_HOST   = var.host_domain.endpoint,
+      ES_HOST   = data.aws_opensearch_domain.host_domain.endpoint,
       INDEX     = "guardduty-logs"
     }
   }
