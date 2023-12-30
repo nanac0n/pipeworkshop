@@ -16,13 +16,13 @@ resource "aws_kinesis_firehose_delivery_stream" "tf-waf-firehose-stream"{
 
         parameters {
           parameter_name  = "LambdaArn"
-          parameter_value = "${aws_lambda_function.aws_waf_logs_lambda_terraform.arn}:$LATEST"
+          parameter_value = "${aws_lambda_function.tf-waf-logs-lambda.arn}:$LATEST"
         }
       }
     }
 
     s3_configuration {
-      bucket_arn = aws_s3_bucket.tf-aws-s3-bucket.arn
+      bucket_arn = aws_s3_bucket.tf-aws-waf-s3-bucket.arn
       role_arn   = aws_iam_role.tf-firehose-role.arn
       buffering_size     = 10
       buffering_interval = 400
