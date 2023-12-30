@@ -1,4 +1,6 @@
-/*resource "aws_guardduty_detector" "DevSecOpsDetector" {
+resource "aws_guardduty_detector" "DevSecOpsDetector" {
+  count = length(data.aws_guardduty_detector.existing.id) > 0 ? 0 : 1
+
   enable = true
 
   datasources {
@@ -18,4 +20,4 @@
       }
     }
   }
-}*/
+}
