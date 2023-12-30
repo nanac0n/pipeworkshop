@@ -1,10 +1,10 @@
-resource "aws_kinesis_firehose_delivery_stream" "waf_firehose_stream"{
-  name = "aws-waf-logs-firehose_stream"
+resource "aws_kinesis_firehose_delivery_stream" "tf-waf-firehose-stream"{
+  name = "aws-waf-logs-firehose-stream"
   destination = "elasticsearch"
 
   elasticsearch_configuration {
     index_name = "aws-waf-logs"
-    role_arn   = aws_iam_role.firehose_role.arn
+    role_arn   = aws_iam_role.tf-firehose-role.arn
     domain_arn = aws_elasticsearch_domain.domain.arn
     s3_backup_mode = "AllDocuments"
 
@@ -22,8 +22,8 @@ resource "aws_kinesis_firehose_delivery_stream" "waf_firehose_stream"{
     }
 
     s3_configuration {
-      bucket_arn = aws_s3_bucket.aws-waf-logs-terraform-test.arn
-      role_arn   = aws_iam_role.firehose_role.arn
+      bucket_arn = aws_s3_bucket.tf-aws-s3-bucket.arn
+      role_arn   = aws_iam_role.tf-firehose-role.arn
       buffering_size     = 10
       buffering_interval = 400
       compression_format = "UNCOMPRESSED"
@@ -32,7 +32,7 @@ resource "aws_kinesis_firehose_delivery_stream" "waf_firehose_stream"{
 }
 
 #firehose iam, 다른 aws 서비스
-resource "aws_iam_role" "firehose_role" {
+resource "aws_iam_role" "tf-firehose-role" {
   name = "firehose_role"
 
   assume_role_policy = <<EOF
@@ -52,9 +52,9 @@ resource "aws_iam_role" "firehose_role" {
 EOF
 }
 
-resource "aws_iam_role_policy" "firehose_policy" {
+resource "aws_iam_role_policy" "tf-firehose-policy" {
   name = "firehose_policy"
-  role   = aws_iam_role.firehose_role.id
+  role   = aws_iam_role.tf-firehose-role.id
   policy = <<EOF
 {
   "Version": "2012-10-17",

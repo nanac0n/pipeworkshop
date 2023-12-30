@@ -1,8 +1,4 @@
-resource "aws_s3_bucket" "aws-waf-logs-terraform-test"{
+resource "aws_s3_bucket" "tf-aws-s3-bucket"{
   bucket = "aws-waf-logs-terraform-test"
   force_destroy = true
-
-  tags = {
-    Name = "waf-logs-bucket"
-  }
 }
