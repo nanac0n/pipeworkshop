@@ -613,3 +613,70 @@ resource "aws_guardduty_detector" "DevSecOpsDetector" {
     }
   }
 }
+
+provider "aws" {
+  region = "ap-northeast-2" 
+}
+
+# CloudTrail log -> OpenSearch Lambda 함수 생성
+resource "aws_lambda_function" "tf-cloudtrail-logs-lambda" {
+  function_name = "aws-cloudtrail-logs-lambda"
+  handler       = "index.handler" # 이 부분은 Lambda 함수의 핸들러에 따라 변경
+  runtime       = "python3.8"     # 사용할 런타임
+
+  # Lambda 함수 코드 (예: S3에서 코드를 가져오거나, 파일을 직접 포함)
+  s3_key    = "cloudtrail-logs-lambda.zip"
+
+  # IAM 역할 설정
+  role = aws_iam_role.tf-cloudtrail-lambda-role.arn
+}
+
+# IAM 역할 생성
+resource "aws_iam_role" "ltf-cloudtrail-lambda-role" {
+  name = "aws-cloudtrail-lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        },
+      },
+    ],
+  })
+}
+
+# IAM 역할에 대한 정책 연결
+resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
+  name   = "aws-cloudtrail-lambda-policy"
+  role   = aws_iam_role.tf-cloudtrail-lambda-role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "es:ESHttpPost",
+          "es:ESHttpPut"
+        ],
+        Resource = "*",
+        Effect = "Allow"
+      }
+    ]
+  })
+}
+
+
+# CloudWatch 로그 그룹과 Lambda 연결
+resource "aws_cloudwatch_log_subscription_filter" "tf-cloudtrail-log-filter" {
+  name            = "aws-cloudtrail-log-filter"
+  log_group_name  = aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.name
+  #filter_pattern  = ""
+  destination_arn = aws_lambda_function.tf-cloudtrail-logs-lambda.arn
+}
