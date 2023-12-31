@@ -662,6 +662,7 @@ resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
+          "logs:GetLogEvents",  
           "es:ESHttpPost",
           "es:ESHttpPut"
         ],
