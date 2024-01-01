@@ -632,7 +632,7 @@ resource "aws_lambda_function" "tf-cloudtrail-logs-lambda" {
 }
 
 # IAM 역할 생성
-resource "aws_iam_role" "ltf-cloudtrail-lambda-role" {
+resource "aws_iam_role" "tf-cloudtrail-lambda-role" {
   name = "aws-cloudtrail-lambda-role"
 
   assume_role_policy = jsonencode({
