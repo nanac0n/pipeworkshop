@@ -600,6 +600,8 @@ resource "aws_iam_role_policy" "tf-cloudwatch-iam-policy" {
 }
 
 #GuardDuty 생성
+data "aws_guardduty_detector" "existing" {
+}
 resource "aws_guardduty_detector" "DevSecOpsDetector" {
   count = length(data.aws_guardduty_detector.existing.id) > 0 ? 0 : 1
 
