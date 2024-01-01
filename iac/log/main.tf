@@ -519,10 +519,8 @@ resource "aws_wafv2_web_acl" "tf-web-acl"{
 }
 
 resource "aws_wafv2_web_acl_association" "wafv2_association"{
-
   resource_arn = aws_lb.tf-alb.arn
   web_acl_arn  = aws_wafv2_web_acl.tf-web-acl.arn
-
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "wafv2_logging_configuration" {
