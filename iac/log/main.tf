@@ -49,8 +49,13 @@ resource "aws_s3_bucket" "tf-gd-s3" {
 
 # CloudTrail 로그를 저장할 S3 버킷
 resource "aws_s3_bucket" "tf-cloudtrail-s3" {
+  bucket = data.aws_s3_bucket.tf-cloudtrail-s3.bucket
+}
+
+data "aws_s3_bucket" "tf-cloudtrail-s3" {
   bucket = "aws-cloudtrail-s3"
 }
+
 
 # CloudTrail policy
 resource "aws_s3_bucket_policy" "tf-cloudtrail-bucket-policy" {
@@ -519,8 +524,10 @@ resource "aws_wafv2_web_acl" "tf-web-acl"{
 }
 
 resource "aws_wafv2_web_acl_association" "wafv2_association"{
+
   resource_arn = aws_lb.tf-alb.arn
   web_acl_arn  = aws_wafv2_web_acl.tf-web-acl.arn
+
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "wafv2_logging_configuration" {
@@ -553,6 +560,11 @@ resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-p
 resource "aws_cloudwatch_log_group" "tf-cloudtrail-to-cloudwatch-log-group" {
   name = "aws-cloudtrail-to-cloudwatch-log-group"
 }
+
+data "aws_cloudwatch_log_group" "tf-cloudtrail-to-cloudwatch-log-group" {
+  name = "aws-cloudtrail-to-cloudwatch-log-group"
+}
+
 
 
 # CloudWatch 로그를 처리할 IAM role
@@ -623,7 +635,7 @@ resource "aws_lambda_function" "tf-cloudtrail-logs-lambda" {
   runtime       = "python3.8"     # 사용할 런타임
 
   # Lambda 함수 코드 (예: S3에서 코드를 가져오거나, 파일을 직접 포함)
-  s3_key    = "cloudtrail-logs-lambda.zip"
+  filename   = "cloudtrail-logs-lambda.zip"
 
   # IAM 역할 설정
   role = aws_iam_role.tf-cloudtrail-lambda-role.arn
@@ -632,6 +644,7 @@ resource "aws_lambda_function" "tf-cloudtrail-logs-lambda" {
 # IAM 역할 생성
 resource "aws_iam_role" "tf-cloudtrail-lambda-role" {
   name = "aws-cloudtrail-lambda-role"
+
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -646,6 +659,8 @@ resource "aws_iam_role" "tf-cloudtrail-lambda-role" {
     ],
   })
 }
+
+
 
 # IAM 역할에 대한 정책 연결
 resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
@@ -676,6 +691,6 @@ resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
 resource "aws_cloudwatch_log_subscription_filter" "tf-cloudtrail-log-filter" {
   name            = "aws-cloudtrail-log-filter"
   log_group_name  = aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.name
-  #filter_pattern  = ""
+  filter_pattern  = ""
   destination_arn = aws_lambda_function.tf-cloudtrail-logs-lambda.arn
 }
