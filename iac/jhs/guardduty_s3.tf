@@ -2,6 +2,10 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
+resource "aws_s3_bucket" "tf-gd-s3" {
+  bucket        = "aws-gd-logs-bucket"
+  force_destroy = true
+}
 
 data "aws_s3_bucket" "gd_bucket" {
   bucket = aws_s3_bucket.aws-gd-logs-bucket.id
@@ -73,8 +77,6 @@ data "aws_iam_policy_document" "kms_pol" {
     }
   }
 }
-
-data "aws_guardduty_detector" "existing" {}
 
 output "existing_guardduty_detector_id" {
   value = data.aws_guardduty_detector.existing.id

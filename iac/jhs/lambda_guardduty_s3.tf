@@ -8,9 +8,9 @@ variable "opensearch_domain_name" {
   default     = "opensearch-test"
 }
 
-data "aws_caller_identity" "current" {}
+#data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
+#data "aws_region" "current" {}
 
 data "aws_opensearch_domain" "host_domain" {
   domain_name = var.opensearch_domain_name
