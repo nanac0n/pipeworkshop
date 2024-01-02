@@ -1,3 +1,6 @@
+provider "aws" {
+  region = "ap-northeast-2"
+}
 #opensearch 생성
 resource "aws_elasticsearch_domain" "domain" {
   domain_name = "opensearch-test"
@@ -626,9 +629,7 @@ resource "aws_guardduty_detector" "DevSecOpsDetector" {
   }
 }
 
-provider "aws" {
-  region = "ap-northeast-2" 
-}
+
 
 # CloudTrail log -> OpenSearch Lambda 함수 생성
 resource "aws_lambda_function" "tf-cloudtrail-logs-lambda" {
