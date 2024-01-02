@@ -35,7 +35,7 @@ resource "aws_lambda_function" "springtoes_lambda" {
 }
 
 # S3 Bucket Notification for the Lambda Trigger
-resource "aws_s3_bucket_notification" "s3_notification" {
+resource "aws_s3_bucket_notification" "spring_s3_notification" {
   bucket = var.springlog_bucket_name
 
   lambda_function {
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_notification" "s3_notification" {
 }
 
 # Permissions for S3 to invoke Lambda Function
-resource "aws_lambda_permission" "s3_invoke" {
+resource "aws_lambda_permission" "spring_s3_invoke" {
   statement_id  = "AllowS3Invocation"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.springtoes_lambda.function_name

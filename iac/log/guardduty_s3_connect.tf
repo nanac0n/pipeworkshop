@@ -1,6 +1,6 @@
-data "aws_caller_identity" "current" {}
+#data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
+#data "aws_region" "current" {}
 
 
 data "aws_s3_bucket" "gd_bucket" {
@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "kms_pol" {
   }
 }
 
-data "aws_guardduty_detector" "existing" {}
+#data "aws_guardduty_detector" "existing" {}
 
 output "existing_guardduty_detector_id" {
   value = data.aws_guardduty_detector.existing.id
