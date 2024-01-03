@@ -7,8 +7,9 @@ resource "aws_s3_bucket" "tf-gd-s3" {
   force_destroy = true
 }
 
+
 data "aws_s3_bucket" "gd_bucket" {
-  bucket = aws_s3_bucket.aws-gd-logs-bucket.id
+  bucket = aws_s3_bucket.tf-gd-s3.bucket
 }
 data "aws_iam_policy_document" "bucket_pol" {
   statement {
@@ -18,7 +19,7 @@ data "aws_iam_policy_document" "bucket_pol" {
     ]
 
     resources = [
-      "${aws_s3_bucket.gd_bucket.arn}/*"
+      "${data.aws_s3_bucket.gd_bucket.arn}/*"
     ]
 
     principals {
@@ -34,7 +35,7 @@ data "aws_iam_policy_document" "bucket_pol" {
     ]
 
     resources = [
-      aws_s3_bucket.gd_bucket.arn
+      data.aws_s3_bucket.gd_bucket.arn
     ]
 
     principals {
@@ -84,12 +85,12 @@ output "existing_guardduty_detector_id" {
 
 
 
-resource "aws_s3_bucket_policy" "tf-aws-gd-s3-policy" {
-  bucket = aws_s3_bucket.gd_bucket.id
+resource "aws_s3_bucket_policy" "gd_bucket_policy" {
+  bucket = data.aws_s3_bucket.gd_bucket.id
   policy = data.aws_iam_policy_document.bucket_pol.json
 }
 
-resource "aws_kms_key" "tf-gd-key" {
+resource "aws_kms_key" "tf_gd_key" {
   description             = "Temporary key for AccTest of TF"
   deletion_window_in_days = 7
   policy                  = data.aws_iam_policy_document.kms_pol.json
@@ -97,8 +98,8 @@ resource "aws_kms_key" "tf-gd-key" {
 
 resource "aws_guardduty_publishing_destination" "test" {
   detector_id     = data.aws_guardduty_detector.existing.id
-  destination_arn = aws_s3_bucket.gd_bucket.arn
-  kms_key_arn     = aws_kms_key.gd_key.arn
+  destination_arn = data.aws_s3_bucket.gd_bucket.arn
+  kms_key_arn     = aws_kms_key.tf_gd_key.arn
 
   depends_on = [
     aws_s3_bucket_policy.gd_bucket_policy,
