@@ -1,4 +1,3 @@
-
 variable "springlog_bucket_name" {
   description = "Name of the S3 bucket for Spring logs."
   default     = "pipeline-spring-server"
@@ -6,20 +5,15 @@ variable "springlog_bucket_name" {
 
 variable "opensearch_host" {
   description = "The endpoint of the OpenSearch cluster."
-  default = "https://search-<opensearch-domain-name>-<random-string>.ap-northeast-2.es.amazonaws.com"
+  default     = "https://search-<opensearch-domain-name>-<random-string>.ap-northeast-2.es.amazonaws.com"
 }
 
-
-# IAM Role for the Lambda Function
-data "aws_iam_role" "s3lambdatoes" {
-  name = "s3lambdatoes"
-}
 
 # Lambda Function
 resource "aws_lambda_function" "springtoes_lambda" {
   function_name = "springtoes_lambda_function"
   handler       = "lambda_function.lambda_handler"
-  role          = aws_iam_role.s3lambdatoes_role.arn
+  role          = aws_iam_role.s3lambdatoes_role.arn  # IAM 역할 ARN을 직접 참조
   runtime       = "python3.8"
   filename         = "${path.module}/spring_lambda.zip"
   source_code_hash  = filebase64sha256("./spring_lambda.zip")
@@ -28,7 +22,7 @@ resource "aws_lambda_function" "springtoes_lambda" {
     variables = {
       REGION    = "ap-northeast-2",
       SERVICE   = "es",
-      ES_HOST   = var.opensearch_host, 
+      ES_HOST   = data.aws_opensearch_domain.host_domain.endpoint  # 올바른 변수 사용
       INDEX     = "spring-logs"
     }
   }
