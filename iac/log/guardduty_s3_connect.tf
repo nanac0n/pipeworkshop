@@ -5,7 +5,7 @@
 
 
 data "aws_s3_bucket" "gd_bucket" {
-  bucket = "aws-gd-logs-bucket"
+  bucket = aws_s3_bucket.tf-gd-s3.bucket
 }
 data "aws_iam_policy_document" "bucket_pol" {
   statement {
