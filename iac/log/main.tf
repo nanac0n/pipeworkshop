@@ -1,6 +1,7 @@
 provider "aws" {
   region = "ap-northeast-2"
 }
+
 #opensearch 생성
 resource "aws_elasticsearch_domain" "domain" {
   domain_name = "opensearch-test"
@@ -52,17 +53,14 @@ resource "aws_s3_bucket" "tf-gd-s3" {
 
 # CloudTrail 로그를 저장할 S3 버킷
 resource "aws_s3_bucket" "tf-cloudtrail-s3" {
-  bucket = data.aws_s3_bucket.tf-cloudtrail-s3.bucket
-}
-
-data "aws_s3_bucket" "tf-cloudtrail-s3" {
-  bucket = "aws-cloudtrail-s3"
+  bucket = "data.aws_s3_bucket"
+  force_destroy = true
 }
 
 
 # CloudTrail policy
 resource "aws_s3_bucket_policy" "tf-cloudtrail-bucket-policy" {
-  bucket = aws_s3_bucket.tf-cloudtrail-s3.id
+  bucket = "aws_s3_bucket."
   policy = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
 }
 
@@ -541,15 +539,14 @@ resource "aws_wafv2_web_acl_logging_configuration" "wafv2_logging_configuration"
 # CloudTrail 추적 생성 및 활성화
 resource "aws_cloudtrail" "tf-cloudtrail" {
     name                          = "aws-cloudtrail"
-    s3_bucket_name = data.aws_s3_bucket.tf-cloudtrail-s3.bucket
-    #s3_bucket_name                = aws_s3_bucket.tf-cloudtrail-s3-bucket.bucket
+    s3_bucket_name = aws_s3_bucket.tf-cloudtrail-s3.bucket
+
     include_global_service_events = true
     is_multi_region_trail         = true
     enable_logging                = true
-    cloud_watch_logs_group_arn = data.aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn # CloudTrail requires the Log Stream wildcard
 
-    #cloud_watch_logs_group_arn    = aws_cloudwatch_log_group.tf-cloudtrail-log-group.arn
-    cloud_watch_logs_role_arn     = aws_iam_role.tf-cloudwatch-iam-role.arn
+    cloud_watch_logs_group_arn = aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn # CloudTrail requires the Log Stream wildcard
+    cloud_watch_logs_role_arn  = aws_iam_role.tf-cloudwatch-iam-role.arn
 }
 
 resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-policy" {
@@ -557,17 +554,21 @@ resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-p
   policy_document = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
 }
 
+data "aws_iam_policy_document" "tf-cloudtrail-to-cloudwatch-log-policy" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}/*"]
+  }
+}
 
 
 # CloudWatch Log Group
 resource "aws_cloudwatch_log_group" "tf-cloudtrail-to-cloudwatch-log-group" {
   name = "aws-cloudtrail-to-cloudwatch-log-group"
 }
-
-data "aws_cloudwatch_log_group" "tf-cloudtrail-to-cloudwatch-log-group" {
-  name = "aws-cloudtrail-to-cloudwatch-log-group"
-}
-
 
 
 # CloudWatch 로그를 처리할 IAM role
@@ -581,26 +582,33 @@ resource "aws_iam_role" "tf-cloudwatch-iam-role" {
         Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
-          Service = "cloudtrail.amazonaws.com"
+          Service = "logs.amazonaws.com"
         },
       },
     ],
   })
 }
 
-# CloudTrail에서 CloudWatch 로그로 로그를 보내는 데 필요한 policy
-data "aws_iam_policy_document" "tf-cloudwatch-iam-policy" {
-  statement {
-    actions   = ["logs:PutLogEvents", "logs:CreateLogStream"]
-    resources = [aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn]
-  }
-}
-# CloudTrail role-policy 연결
 resource "aws_iam_role_policy" "tf-cloudwatch-iam-policy" {
   name   = "cloudwatch-policy"
   role   = aws_iam_role.tf-cloudwatch-iam-role.id
   policy = data.aws_iam_policy_document.tf-cloudwatch-iam-policy.json
 }
+
+data "aws_iam_policy_document" "tf-cloudwatch-iam-policy" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:CreateLogGroup"
+    ]
+
+    resources = [
+      "arn:aws:logs:*:*:log-group:/aws/cloudtrail/*"
+    ]
+  }
+}
+
 
 #GuardDuty 생성
 data "aws_guardduty_detector" "existing" {
