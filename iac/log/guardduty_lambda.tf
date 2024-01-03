@@ -13,8 +13,9 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 data "aws_opensearch_domain" "host_domain" {
-  domain_name = var.opensearch_domain_name
+  domain_name = aws_elasticsearch_domain.domain.domain_name
 }
+
 
 # IAM Role for the Lambda Function
 resource "aws_iam_role" "s3lambdatoes_role" {
@@ -46,7 +47,8 @@ resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
         Effect = "Allow",
         Action = [
           "s3:GetObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:PutObject"
         ],
         Resource = [
           "arn:aws:s3:::${var.guardduty_bucket_name}",
@@ -93,7 +95,7 @@ resource "aws_lambda_function" "guardduty_lambda" {
 
 # S3 Bucket Notification for the Lambda Trigger
 resource "aws_s3_bucket_notification" "s3_notification" {
-  bucket = var.guardduty_bucket_name
+  bucket = data.aws_s3_bucket.gd_bucket.bucket
 
   lambda_function {
     lambda_function_arn = aws_lambda_function.guardduty_lambda.arn
@@ -107,5 +109,5 @@ resource "aws_lambda_permission" "s3_invoke" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.guardduty_lambda.function_name
   principal     = "s3.amazonaws.com"
-  source_arn    = "arn:aws:s3:::${var.guardduty_bucket_name}"
+  source_arn    = "arn:aws:s3:::${data.aws_s3_bucket.gd_bucket.bucket}"
 }
