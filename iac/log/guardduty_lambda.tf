@@ -16,6 +16,11 @@ data "aws_opensearch_domain" "host_domain" {
   domain_name = aws_elasticsearch_domain.domain.domain_name
 }
 
+#s3 gd bucket
+data "aws_s3_bucket" "gd_bucket" {
+  bucket = aws_s3_bucket.tf-gd-s3.bucket
+}
+
 
 # IAM Role for the Lambda Function
 resource "aws_iam_role" "s3lambdatoes_role" {
@@ -51,8 +56,8 @@ resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
           "s3:PutObject"
         ],
         Resource = [
-          "arn:aws:s3:::${var.guardduty_bucket_name}",
-          "arn:aws:s3:::${var.guardduty_bucket_name}/*"
+          "${data.aws_s3_bucket.gd_bucket.arn}",
+          "${data.aws_s3_bucket.gdbucket.arn}/*"
         ]
       },
       {
@@ -77,7 +82,7 @@ resource "aws_iam_role_policy_attachment" "lambda_custom_policy" {
 # Lambda Function
 resource "aws_lambda_function" "guardduty_lambda" {
   function_name    = "guardduty_lambda_function"
-  handler          = "lambda_function.lambda_handler"
+  handler          = "guardduty_lambda.lambda_handler"
   role             = aws_iam_role.s3lambdatoes_role.arn
   runtime          = "python3.8"
   filename         = "${path.module}/guardduty_lambda.zip"
