@@ -42,7 +42,7 @@ POLICIES
 }
 #s3버킷 생성
 resource "aws_s3_bucket" "tf-aws-waf-s3-bucket"{
-  bucket = "aws-waf-logs-bucket"
+  bucket = "aws-waf-logs-bucket2"
   force_destroy = true
 }
 
@@ -52,15 +52,26 @@ resource "aws_s3_bucket" "tf-gd-s3" {
 }
 
 # CloudTrail 로그를 저장할 S3 버킷
+/*
 resource "aws_s3_bucket" "tf-cloudtrail-s3" {
   bucket = "data.aws_s3_bucket"
+  force_destroy = true
+}*/
+
+resource "aws_s3_bucket" "tf-cloudtrail-s3" {
+  bucket = "tf-cloudtrail-s3"
   force_destroy = true
 }
 
 
 # CloudTrail policy
+/*
 resource "aws_s3_bucket_policy" "tf-cloudtrail-bucket-policy" {
   bucket = "aws_s3_bucket."
+  policy = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
+}*/
+resource "aws_s3_bucket_policy" "tf-cloudtrail-bucket-policy" {
+  bucket = aws_s3_bucket.tf-cloudtrail-s3.bucket
   policy = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
 }
 
@@ -548,7 +559,6 @@ resource "aws_cloudtrail" "tf-cloudtrail" {
     cloud_watch_logs_group_arn = aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn # CloudTrail requires the Log Stream wildcard
     cloud_watch_logs_role_arn  = aws_iam_role.tf-cloudwatch-iam-role.arn
 }
-
 resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-policy" {
   policy_name     = "aws-cloudtrail-to-cloudwatch-log-policy"
   policy_document = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
@@ -560,7 +570,7 @@ data "aws_iam_policy_document" "tf-cloudtrail-to-cloudwatch-log-policy" {
       "logs:CreateLogStream",
       "logs:PutLogEvents"
     ]
-    resources = ["${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}/*"]
+    resources = ["${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}/*"] 
   }
 }
 
@@ -688,7 +698,8 @@ resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
           "logs:PutLogEvents",
           "logs:GetLogEvents",  
           "es:ESHttpPost",
-          "es:ESHttpPut"
+          "es:ESHttpPut",
+          "logs:PutSubscriptionFilter"
         ],
         Resource = "*",
         Effect = "Allow"

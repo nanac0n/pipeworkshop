@@ -1,697 +1,697 @@
 {
-    "name": "ctl-alert",
-    "type": "monitor",
-    "monitor_type": "query_level_monitor",
-    "enabled": true,
-    "schedule": {
-       "period": {
-          "unit": "MINUTES",
-          "interval": 1
-       }
-    },
-    "inputs": [
-       {
-          "search": {
-             "indices": [
-                "cwl-*"
-             ],
-             "query": {
-                "query": {
-                   "bool": {
-                      "should": [
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreateNetworkAcl",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeleteNetworkAcl",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "ModifyNetworkAclEntry",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "AuthorizeSecurityGroupIngress",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "RevokeSecurityGroupIngress",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "AuthorizeSecurityGroupEgress",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "RevokeSecurityGroupEgress",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreateSecurityGroup",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeleteSecurityGroup",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreateUser",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "UpdateUser",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeleteUser",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreateRole",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeleteRole",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreatePolicy",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeletePolicy",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreatePolicyVersion",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeletePolicyVersion",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreateAccessKey",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "CreateFunction",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "UpdateFunctionCode",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "UpdateFunctionConfiguration",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "PutBucketAcl",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "PutBucketPolicy",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "PutBucketCors",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "PutParameter",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         },
-                         {
-                            "match": {
-                               "eventName": {
-                                  "query": "DeleteParameter",
-                                  "operator": "OR",
-                                  "prefix_length": 0,
-                                  "max_expansions": 50,
-                                  "fuzzy_transpositions": true,
-                                  "lenient": false,
-                                  "zero_terms_query": "NONE",
-                                  "auto_generate_synonyms_phrase_query": true,
-                                  "boost": 1
-                               }
-                            }
-                         }
-                      ],
-                      "adjust_pure_negative": true,
-                      "boost": 1
-                   }
-                }
-             }
-          }
-       }
-    ],
-    "triggers": [
-       {
-          "query_level_trigger": {
-             "id": "8DuV0IwBsEi8lib3Ur8g",
-             "name": "ctl-AK-alert",
-             "severity": "2",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName == \"CreateAccessKey\"\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification140591",
-                   "name": "ctl-AK-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       },
-       {
-          "query_level_trigger": {
-             "id": "8juV0IwBsEi8lib3Ur8g",
-             "name": "ctl-Lambda-alert",
-             "severity": "3",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName in [\"CreateFunction\", \"UpdateFunctionCode\", \"UpdateFunctionConfiguration\"]\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification651632",
-                   "name": "ctl-Lambda-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       },
-       {
-          "query_level_trigger": {
-             "id": "6juV0IwBsEi8lib3Ur8g",
-             "name": "ctl-NACL-alert",
-             "severity": "3",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName in [\"CreateNetworkAcl\", \"DeleteNetworkAcl\", \"ModifyNetworkAclEntry\"]\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification638479",
-                   "name": "ctl-NACL-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. \n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       },
-       {
-          "query_level_trigger": {
-             "id": "9DuV0IwBsEi8lib3Ur8g",
-             "name": "ctl-S3-alert",
-             "severity": "2",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName in [\"PutBucketAcl\", \"PutBucketPolicy\", \"PutBucketCors\"]\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification920444",
-                   "name": "ctl-S3-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       },
-       {
-          "query_level_trigger": {
-             "id": "7DuV0IwBsEi8lib3Ur8g",
-             "name": "ctl-SG-alert",
-             "severity": "2",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName in [\"AuthorizeSecurityGroupIngress\", \"RevokeSecurityGroupIngress\", \"AuthorizeSecurityGroupEgress\", \"RevokeSecurityGroupEgress\", \"CreateSecurityGroup\", \"DeleteSecurityGroup\"]\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification920228",
-                   "name": "ctl-SG-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. \n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       },
-       {
-          "query_level_trigger": {
-             "id": "9juV0IwBsEi8lib3Ur8g",
-             "name": "ctl-SSM-alert",
-             "severity": "4",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName in [\"PutParameter\", \"DeleteParameter\"]\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification442396",
-                   "name": "ctl-SSM-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       },
-       {
-          "query_level_trigger": {
-             "id": "7juV0IwBsEi8lib3Ur8g",
-             "name": "ctl-iam-alert",
-             "severity": "1",
-             "condition": {
-                "script": {
-                   "source": "ctx.results[0].hits.hits.any { hit -> \n    hit._source.eventName in [\"CreateUser\", \"UpdateUser\", \"DeleteUser\", \"CreateRole\", \"DeleteRole\", \"CreatePolicy\", \"DeletePolicy\", \"CreatePolicyVersion\", \"DeletePolicyVersion\"]\n}\n",
-                   "lang": "painless"
-                }
-             },
-             "actions": [
-                {
-                   "id": "notification368319",
-                   "name": "ctl-iam-alert",
-                   "destination_id": "5y0qV4wBa5jf8960Ka99",
-                   "message_template": {
-                      "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
-                      "lang": "mustache"
-                   },
-                   "throttle_enabled": false,
-                   "subject_template": {
-                      "source": "Alerting CloudTrail action",
-                      "lang": "mustache"
-                   }
-                }
-             ]
-          }
-       }
-    ],
-    "ui_metadata": {
-       "schedule": {
-          "timezone": null,
-          "frequency": "interval",
-          "period": {
-             "unit": "MINUTES",
-             "interval": 1
-          },
-          "daily": 0,
-          "weekly": {
-             "tue": false,
-             "wed": false,
-             "thur": false,
-             "sat": false,
-             "fri": false,
-             "mon": false,
-             "sun": false
-          },
-          "monthly": {
-             "type": "day",
-             "day": 1
-          },
-          "cronExpression": "0 */1 * * *"
-       },
-       "monitor_type": "query_level_monitor",
-       "search": {
-          "searchType": "query",
-          "timeField": "eventTime",
-          "aggregations": [
-             {
-                "aggregationType": "count",
-                "fieldName": "requestParameters.ModifySecurityGroupRulesRequest.SecurityGroupRule.SecurityGroupRule.FromPort"
-             },
-             {
-                "aggregationType": "count",
-                "fieldName": "requestParameters.DescribeSecurityGroupRulesRequest.Filter.Value.tag"
-             },
-             {
-                "aggregationType": "count",
-                "fieldName": "requestParameters.DescribeSecurityGroupRulesRequest.Filter.tag"
-             },
-             {
-                "aggregationType": "count",
-                "fieldName": "requestParameters.ModifySecurityGroupRulesRequest.SecurityGroupRule.SecurityGroupRule.FromPort"
-             },
-             {
-                "aggregationType": "count",
-                "fieldName": "requestParameters.ModifySecurityGroupRulesRequest.SecurityGroupRule.SecurityGroupRule.ToPort"
-             }
-          ],
-          "cleanedGroupBy": [],
-          "bucketValue": 1,
-          "bucketUnitOfTime": "h",
-          "filters": []
-       }
-    }
- }
+   "name": "ctl-alert",
+   "type": "monitor",
+   "monitor_type": "query_level_monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "unit": "MINUTES",
+         "interval": 1
+      }
+   },
+   "inputs": [
+      {
+         "search": {
+            "indices": [
+               "cwl-*"
+            ],
+            "query": {
+               "query": {
+                  "bool": {
+                     "should": [
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreateNetworkAcl",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeleteNetworkAcl",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "ModifyNetworkAclEntry",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "AuthorizeSecurityGroupIngress",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "RevokeSecurityGroupIngress",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "AuthorizeSecurityGroupEgress",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "RevokeSecurityGroupEgress",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreateSecurityGroup",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeleteSecurityGroup",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreateUser",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "UpdateUser",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeleteUser",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreateRole",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeleteRole",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreatePolicy",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeletePolicy",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreatePolicyVersion",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeletePolicyVersion",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreateAccessKey",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "CreateFunction",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "UpdateFunctionCode",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "UpdateFunctionConfiguration",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "PutBucketAcl",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "PutBucketPolicy",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "PutBucketCors",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "PutParameter",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        },
+                        {
+                           "match": {
+                              "eventName": {
+                                 "query": "DeleteParameter",
+                                 "operator": "OR",
+                                 "prefix_length": 0,
+                                 "max_expansions": 50,
+                                 "fuzzy_transpositions": true,
+                                 "lenient": false,
+                                 "zero_terms_query": "NONE",
+                                 "auto_generate_synonyms_phrase_query": true,
+                                 "boost": 1
+                              }
+                           }
+                        }
+                     ],
+                     "adjust_pure_negative": true,
+                     "boost": 1
+                  }
+               }
+            }
+         }
+      }
+   ],
+   "triggers": [
+      {
+         "query_level_trigger": {
+            "id": "8DuV0IwBsEi8lib3Ur8g",
+            "name": "ctl-AK-alert",
+            "severity": "2",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> hit._source.eventName.equals(\"CreateAccessKey\"))\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification140591",
+                  "name": "ctl-AK-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "query_level_trigger": {
+            "id": "8juV0IwBsEi8lib3Ur8g",
+            "name": "ctl-Lambda-alert",
+            "severity": "3",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> hit._source.eventName.equals(\"CreateAccessKey\"))\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification651632",
+                  "name": "ctl-Lambda-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "query_level_trigger": {
+            "id": "6juV0IwBsEi8lib3Ur8g",
+            "name": "ctl-NACL-alert",
+            "severity": "3",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> \n    [\"CreateNetworkAcl\", \"DeleteNetworkAcl\", \"ModifyNetworkAclEntry\"].contains(hit._source.eventName)\n)\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification638479",
+                  "name": "ctl-NACL-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. \n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "query_level_trigger": {
+            "id": "9DuV0IwBsEi8lib3Ur8g",
+            "name": "ctl-S3-alert",
+            "severity": "2",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> \n    [\"PutBucketAcl\", \"PutBucketPolicy\", \"PutBucketCors\"].contains(hit._source.eventName)\n)\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification920444",
+                  "name": "ctl-S3-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "query_level_trigger": {
+            "id": "7DuV0IwBsEi8lib3Ur8g",
+            "name": "ctl-SG-alert",
+            "severity": "2",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> \n    [\"AuthorizeSecurityGroupIngress\", \"RevokeSecurityGroupIngress\", \"AuthorizeSecurityGroupEgress\", \"RevokeSecurityGroupEgress\", \"CreateSecurityGroup\", \"DeleteSecurityGroup\"].contains(hit._source.eventName)\n)\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification920228",
+                  "name": "ctl-SG-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. \n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "query_level_trigger": {
+            "id": "9juV0IwBsEi8lib3Ur8g",
+            "name": "ctl-SSM-alert",
+            "severity": "4",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> \n    [\"PutParameter\", \"DeleteParameter\"].contains(hit._source.eventName)\n)\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification442396",
+                  "name": "ctl-SSM-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      },
+      {
+         "query_level_trigger": {
+            "id": "7juV0IwBsEi8lib3Ur8g",
+            "name": "ctl-iam-alert",
+            "severity": "1",
+            "condition": {
+               "script": {
+                  "source": "ctx.results[0].hits.hits.stream().anyMatch(hit -> \n    [\"CreateUser\", \"UpdateUser\", \"DeleteUser\", \"CreateRole\", \"DeleteRole\", \"CreatePolicy\", \"DeletePolicy\", \"CreatePolicyVersion\", \"DeletePolicyVersion\"].contains(hit._source.eventName)\n)\n",
+                  "lang": "painless"
+               }
+            },
+            "actions": [
+               {
+                  "id": "notification368319",
+                  "name": "ctl-iam-alert",
+                  "destination_id": "5y0qV4wBa5jf8960Ka99",
+                  "message_template": {
+                     "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n  - Trigger: {{ctx.trigger.name}}\n  - Severity: {{ctx.trigger.severity}}\n  - Period start: {{ctx.periodStart}}\n  - Period end: {{ctx.periodEnd}}",
+                     "lang": "mustache"
+                  },
+                  "throttle_enabled": false,
+                  "subject_template": {
+                     "source": "Alerting CloudTrail action",
+                     "lang": "mustache"
+                  }
+               }
+            ]
+         }
+      }
+   ],
+   "ui_metadata": {
+      "schedule": {
+         "timezone": null,
+         "frequency": "interval",
+         "period": {
+            "unit": "MINUTES",
+            "interval": 1
+         },
+         "daily": 0,
+         "weekly": {
+            "tue": false,
+            "wed": false,
+            "thur": false,
+            "sat": false,
+            "fri": false,
+            "mon": false,
+            "sun": false
+         },
+         "monthly": {
+            "type": "day",
+            "day": 1
+         },
+         "cronExpression": "0 */1 * * *"
+      },
+      "monitor_type": "query_level_monitor",
+      "search": {
+         "searchType": "query",
+         "timeField": "eventTime",
+         "aggregations": [
+            {
+               "aggregationType": "count",
+               "fieldName": "requestParameters.ModifySecurityGroupRulesRequest.SecurityGroupRule.SecurityGroupRule.FromPort"
+            },
+            {
+               "aggregationType": "count",
+               "fieldName": "requestParameters.DescribeSecurityGroupRulesRequest.Filter.Value.tag"
+            },
+            {
+               "aggregationType": "count",
+               "fieldName": "requestParameters.DescribeSecurityGroupRulesRequest.Filter.tag"
+            },
+            {
+               "aggregationType": "count",
+               "fieldName": "requestParameters.ModifySecurityGroupRulesRequest.SecurityGroupRule.SecurityGroupRule.FromPort"
+            },
+            {
+               "aggregationType": "count",
+               "fieldName": "requestParameters.ModifySecurityGroupRulesRequest.SecurityGroupRule.SecurityGroupRule.ToPort"
+            }
+         ],
+         "cleanedGroupBy": [],
+         "bucketValue": 1,
+         "bucketUnitOfTime": "h",
+         "filters": []
+      }
+   }
+}
