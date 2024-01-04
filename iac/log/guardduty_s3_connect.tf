@@ -75,12 +75,6 @@ data "aws_iam_policy_document" "kms_pol" {
   }
 }
 
-output "existing_guardduty_detector_id" {
-  value = data.aws_guardduty_detector.existing.id
-}
-
-
-
 resource "aws_s3_bucket_policy" "gd_bucket_policy" {
   bucket = data.aws_s3_bucket.gd_bucket.id
   policy = data.aws_iam_policy_document.bucket_pol.json
