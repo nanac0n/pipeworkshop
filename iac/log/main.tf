@@ -556,7 +556,7 @@ resource "aws_cloudtrail" "tf-cloudtrail" {
     is_multi_region_trail         = true
     enable_logging                = true
 
-    cloud_watch_logs_group_arn = aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn # CloudTrail requires the Log Stream wildcard
+    cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}:*" # CloudTrail requires the Log Stream wildcard
     cloud_watch_logs_role_arn  = aws_iam_role.tf-cloudwatch-iam-role.arn
 }
 resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-policy" {
@@ -568,7 +568,8 @@ data "aws_iam_policy_document" "tf-cloudtrail-to-cloudwatch-log-policy" {
   statement {
     actions = [
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
+      "logs:CreateLogGroup"
     ]
     resources = ["${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}/*"] 
   }
@@ -589,13 +590,13 @@ resource "aws_iam_role" "tf-cloudwatch-iam-role" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
-          Service = "logs.amazonaws.com"
+          Service = ["logs.amazonaws.com", "cloudtrail.amazonaws.com"]
         },
-      },
-    ],
+        Action = "sts:AssumeRole"
+      }
+    ]
   })
 }
 
@@ -627,6 +628,8 @@ resource "aws_guardduty_detector" "DevSecOpsDetector" {
   count = length(data.aws_guardduty_detector.existing.id) > 0 ? 0 : 1
 
   enable = true
+
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
 
   datasources {
     s3_logs {
@@ -706,6 +709,13 @@ resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
       }
     ]
   })
+}
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.tf-cloudtrail-logs-lambda.function_name
+  principal     = "logs.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}:*"
 }
 
 
