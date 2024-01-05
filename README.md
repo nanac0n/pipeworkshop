@@ -109,9 +109,9 @@ First, make sure AWS CLI is installed and permissions are properly configured. A
 cd 테라폼 코드가 존재하는 디렉토리
 terraform init
 ```
-After initialization done, changes variable values you will find in 000.tf
+After done with changing variables/parameters, and all set, it's time to do a DRY RU to see/verify what resources this will create
 ```
-vi 000.tf
+terraform plan
 ```
 
 Verify once and if all seems well, it's time to create actual remote infratucture in AWS.
