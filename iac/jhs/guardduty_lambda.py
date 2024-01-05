@@ -24,7 +24,7 @@ def lambda_handler(event, context):
                 send_to_opensearch(log_entry, region, service)
 
 def send_to_opensearch(log_data, region, service):
-    opensearch_endpoint = os.environ['OPENSEARCH_ENDPOINT']  # OpenSearch 엔드포인트를 환경 변수에서 가져옴
+    opensearch_endpoint = os.environ['ES_HOST']  # OpenSearch 엔드포인트를 환경 변수에서 가져옴
     opensearch_index = "guardduty-logs"
     url = f"https://{opensearch_endpoint}/{opensearch_index}/_doc"
 
