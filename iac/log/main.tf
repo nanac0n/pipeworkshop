@@ -546,19 +546,6 @@ resource "aws_wafv2_web_acl_logging_configuration" "wafv2_logging_configuration"
   log_destination_configs = [aws_kinesis_firehose_delivery_stream.tf-waf-firehose-stream.arn]
   resource_arn            = aws_wafv2_web_acl.tf-web-acl.arn
 }
-
-# CloudTrail 추적 생성 및 활성화
-resource "aws_cloudtrail" "tf-cloudtrail" {
-    name                          = "aws-cloudtrail"
-    s3_bucket_name = aws_s3_bucket.tf-cloudtrail-s3.bucket
-
-    include_global_service_events = true
-    is_multi_region_trail         = true
-    enable_logging                = true
-
-    cloud_watch_logs_group_arn = aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn # CloudTrail requires the Log Stream wildcard
-    cloud_watch_logs_role_arn  = aws_iam_role.tf-cloudwatch-iam-role.arn
-}
 resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-policy" {
   policy_name     = "aws-cloudtrail-to-cloudwatch-log-policy"
   policy_document = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
@@ -568,7 +555,8 @@ data "aws_iam_policy_document" "tf-cloudtrail-to-cloudwatch-log-policy" {
   statement {
     actions = [
       "logs:CreateLogStream",
-      "logs:PutLogEvents"
+      "logs:PutLogEvents",
+      "logs:CreateLogGroup"
     ]
     resources = ["${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}/*"] 
   }
@@ -589,20 +577,14 @@ resource "aws_iam_role" "tf-cloudwatch-iam-role" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action = "sts:AssumeRole",
         Effect = "Allow",
         Principal = {
-          Service = "logs.amazonaws.com"
+          Service = ["cloudtrail.amazonaws.com"]
         },
-      },
-    ],
+        Action = "sts:AssumeRole"
+      }
+    ]
   })
-}
-
-resource "aws_iam_role_policy" "tf-cloudwatch-iam-policy" {
-  name   = "cloudwatch-policy"
-  role   = aws_iam_role.tf-cloudwatch-iam-role.id
-  policy = data.aws_iam_policy_document.tf-cloudwatch-iam-policy.json
 }
 
 data "aws_iam_policy_document" "tf-cloudwatch-iam-policy" {
@@ -614,10 +596,31 @@ data "aws_iam_policy_document" "tf-cloudwatch-iam-policy" {
     ]
 
     resources = [
-      "arn:aws:logs:*:*:log-group:/aws/cloudtrail/*"
+          "arn:aws:logs:*:*:log-group:*:*" #"arn:aws:logs:*:*:log-group:/aws/cloudtrail/*"
     ]
   }
 }
+
+resource "aws_iam_role_policy" "tf-cloudwatch-iam-policy" {
+  name   = "cloudwatch-policy"
+  role   = aws_iam_role.tf-cloudwatch-iam-role.id
+  policy = data.aws_iam_policy_document.tf-cloudwatch-iam-policy.json
+}
+# CloudTrail 추적 생성 및 활성화
+resource "aws_cloudtrail" "tf-cloudtrail" {
+    name                          = "aws-cloudtrail"
+    s3_bucket_name = aws_s3_bucket.tf-cloudtrail-s3.bucket
+
+    include_global_service_events = true
+    is_multi_region_trail         = true
+    enable_logging                = true
+
+    cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}:*" # CloudTrail requires the Log Stream wildcard
+    cloud_watch_logs_role_arn  = aws_iam_role.tf-cloudwatch-iam-role.arn
+
+    depends_on = [ aws_s3_bucket_policy.tf-cloudtrail-bucket-policy, aws_iam_role.tf-cloudwatch-iam-role, aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group ]
+}
+
 
 
 #GuardDuty 생성
@@ -627,6 +630,8 @@ resource "aws_guardduty_detector" "DevSecOpsDetector" {
   count = length(data.aws_guardduty_detector.existing.id) > 0 ? 0 : 1
 
   enable = true
+
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
 
   datasources {
     s3_logs {
@@ -706,6 +711,13 @@ resource "aws_iam_role_policy" "tf-cloudtrail-lambda-policy" {
       }
     ]
   })
+}
+resource "aws_lambda_permission" "allow_cloudwatch" {
+  statement_id  = "AllowExecutionFromCloudWatch"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.tf-cloudtrail-logs-lambda.function_name
+  principal     = "logs.amazonaws.com"
+  source_arn    = "${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}:*"
 }
 
 

@@ -17,6 +17,7 @@ data "aws_opensearch_domain" "host_domain" {
 }
 
 
+
 # IAM Role for the Lambda Function
 resource "aws_iam_role" "s3lambdatoes_role" {
   name = "s3lambdatoes"
@@ -51,8 +52,8 @@ resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
           "s3:PutObject"
         ],
         Resource = [
-          "arn:aws:s3:::${var.guardduty_bucket_name}",
-          "arn:aws:s3:::${var.guardduty_bucket_name}/*"
+          "${data.aws_s3_bucket.gd_bucket.arn}",
+          "${data.aws_s3_bucket.gd_bucket.arn}/*"
         ]
       },
       {
@@ -63,6 +64,13 @@ resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
           "es:ESHttpGet"
         ],
         Resource = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.opensearch_domain_name}/*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "kms:Decrypt"
+        ],
+        Resource = aws_kms_key.tf_gd_key.arn
       }
     ]
   })
@@ -77,11 +85,12 @@ resource "aws_iam_role_policy_attachment" "lambda_custom_policy" {
 # Lambda Function
 resource "aws_lambda_function" "guardduty_lambda" {
   function_name    = "guardduty_lambda_function"
-  handler          = "lambda_function.lambda_handler"
+  handler          = "guardduty_lambda.lambda_handler"
   role             = aws_iam_role.s3lambdatoes_role.arn
   runtime          = "python3.8"
   filename         = "${path.module}/guardduty_lambda.zip"
   source_code_hash = filebase64sha256("./guardduty_lambda.zip")
+  timeout          = 90
 
   environment {
     variables = {
