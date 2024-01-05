@@ -588,7 +588,8 @@ Monitor *guard-duty* alert just entered alert status.
 
 ### Terraform Instructions
 ---------------------------------------
-First, make sure AWS CLI is installed and permissions are properly configured. After that, initialize Terraform in the Terraform Project folder.
+First, Create Terraform [iac/log/main.tf](https://github.com/nanac0n/pipeworkshop/blob/main/iac/log/main.tf) </br>
+Make sure AWS CLI is installed and permissions are properly configured. After that, initialize Terraform in the Terraform Project folder.
 ```
 cd terraform
 terraform init
