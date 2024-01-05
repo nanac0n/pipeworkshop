@@ -16,10 +16,6 @@ data "aws_opensearch_domain" "host_domain" {
   domain_name = aws_elasticsearch_domain.domain.domain_name
 }
 
-#s3 gd bucket
-data "aws_s3_bucket" "gd_bucket" {
-  bucket = aws_s3_bucket.tf-gd-s3.bucket
-}
 
 
 # IAM Role for the Lambda Function
@@ -57,7 +53,7 @@ resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
         ],
         Resource = [
           "${data.aws_s3_bucket.gd_bucket.arn}",
-          "${data.aws_s3_bucket.gdbucket.arn}/*"
+          "${data.aws_s3_bucket.gd_bucket.arn}/*"
         ]
       },
       {
@@ -68,6 +64,13 @@ resource "aws_iam_policy" "lambda_s3_opensearch_policy" {
           "es:ESHttpGet"
         ],
         Resource = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.opensearch_domain_name}/*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "kms:Decrypt"
+        ],
+        Resource = aws_kms_key.tf_gd_key.arn
       }
     ]
   })
@@ -87,6 +90,7 @@ resource "aws_lambda_function" "guardduty_lambda" {
   runtime          = "python3.8"
   filename         = "${path.module}/guardduty_lambda.zip"
   source_code_hash = filebase64sha256("./guardduty_lambda.zip")
+  timeout          = 90
 
   environment {
     variables = {
