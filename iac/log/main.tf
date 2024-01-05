@@ -4,7 +4,7 @@ provider "aws" {
 
 #opensearch 생성
 resource "aws_elasticsearch_domain" "domain" {
-  domain_name = "opensearch-test"
+  domain_name = "aws-opensearch-siem"
   elasticsearch_version = "OpenSearch_2.11"
 
 
