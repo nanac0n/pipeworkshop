@@ -2,6 +2,20 @@ provider "aws" {
   region = "ap-northeast-2"
 }
 
+terraform {
+  required_version = ">= 1.0.0"
+
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = ">= 4.20.1"
+    }
+  }
+  backend "local" {
+    path = "terraform.tfstate"  # 상태 파일 경로
+  }
+}
+
 #opensearch 생성
 resource "aws_elasticsearch_domain" "domain" {
   domain_name = "aws-opensearch-siem"

@@ -4,19 +4,7 @@
 #http://aws.amazon.com/agreement or other written agreement between Customer and either
 #Amazon Web Services, Inc. or Amazon Web Services EMEA SARL or both.
 
-terraform {
-  required_version = ">= 1.0.0"
 
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-      version = ">= 4.20.1"
-    }
-  }
-  backend "local" {
-    path = "terraform.tfstate"  # 상태 파일 경로
-  }
-}
 
 #Module for creating a new S3 bucket for storing pipeline artifacts
 module "s3_artifacts_bucket" {
