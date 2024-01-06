@@ -1,0 +1,42 @@
+version: 0.2
+phases:
+  
+  install:
+    commands:
+      - echo "install phase....."
+  pre_build:
+    commands:
+      - pwd && ls && whoami
+      - wget https://github.com/jeremylong/DependencyCheck/releases/download/v8.4.3/dependency-check-8.4.3-release.zip
+      # owasp-dependency-check v8.4.3
+      - unzip dependency-check-8.4.3-release.zip
+      - rm dependency-check-8.4.3-release.zip
+      - chmod -R 775 $CODEBUILD_SRC_DIR/dependency-check/bin/dependency-check.sh
+      - echo "stage pre_build completed"
+      # s3에서 빌드된 프로젝트를 가져오는 코드
+      #- aws s3 cp s3://codebuild-artifact-output-s3/output/webgoat-2023.6-SNAPSHOT.jar $CODEBUILD_SRC_DIR
+  build:
+    commands: 
+      - cd dependency-check/bin
+      - $CODEBUILD_SRC_DIR/dependency-check/bin/dependency-check.sh --project "webgoat" --format JSON --prettyPrint --enableExperimental --scan $CODEBUILD_SRC_DIR --exclude '$CODEBUILD_SRC_DIR/depedency-check/'
+      # --project "target/webgoat-2023.6-SNAPSHOT.jar"는 검사할 프로젝트의 이름 
+      - echo "OWASP dependency check analysis status is completed..."; 
+      - high_risk_dependency=$( cat dependency-check-report.json | grep -c "HIGHEST" )
+  post_build:
+    commands:
+      - |
+        jq "{ \"messageType\": \"CodeScanReport\", \"reportType\": \"OWASP-Dependency-Check\", \
+        \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S.%3NZ\"), \"source_repository\": env.CODEBUILD_SOURCE_REPO_URL, \
+        \"source_branch\": env.CODEBUILD_SOURCE_VERSION, \
+        \"build_id\": env.CODEBUILD_BUILD_ID, \
+        \"source_commitid\": env.CODEBUILD_RESOLVED_SOURCE_VERSION, \
+        \"report\": . }" dependency-check-report.json > payload.json
+      - base64 -w 0 payload.json > payload_base64.txt
+      - pwd && ls && whoami
+      - |
+        if [[ $high_risk_dependency -gt 0 ]]; then
+          echo "there are high or medium alerts.. failing the build"
+          aws lambda invoke --function-name ImportVulToSecurityHub --payload file://payload_base64.txt dependency-check-report.json && echo "LAMBDA_SUCCEEDED" || echo "LAMBDA_FAILED"
+        fi
+artifacts:
+  files: $CODEBUILD_SRC_DIR/dependency-check/bin/*.json

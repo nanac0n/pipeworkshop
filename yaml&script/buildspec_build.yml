@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase...
+  build:
+    commands:
+      - echo Build started on `date`
+      - pwd && ls && whoami
+      - mvn spotless:apply
+      - chmod +x mvnw
+      - ./mvnw clean install
+  post_build:
+    commands:
+      - aws s3 cp ./target/webgoat-2023.6-SNAPSHOT.jar s3://zap-tbucket/
+      - aws s3 cp ./report.py s3://zap-tbucket/
+      - aws s3 cp ./install.py s3://zap-tbucket/
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - '**/*'
+  discard-paths: no
+    #- target/*.jar
+    #- script/start.sh
+    #- appspec.yml
+    #- buildspec_owasp_dependency_check.yml
+    #- buildspec_sonarqube.yml
+    

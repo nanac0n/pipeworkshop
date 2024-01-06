@@ -1,0 +1,41 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - pip3 install -q awscli --upgrade --user
+      - pip3 install boto3
+      - yum -q install -y jq
+      - wget -qO /tmp/sonar-scanner.zip "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip"
+  pre_build:
+    commands:
+      - unzip -q /tmp/sonar-scanner.zip -d /tmp
+  build:
+    commands:
+      - echo Start code scan...
+      - ./../../../../../../../tmp/sonar-scanner-5.0.1.3006-linux/bin/sonar-scanner -Dsonar.projectKey=$SONAR_QUBE_PROJECT -Dsonar.sources=. -Dsonar.host.url=$SONAR_QUBE_URL -Dsonar.token=$SONAR_QUBE_KEY -Dsonar.java.binaries="./" > sonarqube_scanreport.json
+  post_build:
+    commands:
+      - SCAN_RESULT=$(curl -o sonarqube_scanreport.json -u $SONAR_QUBE_KEY $SONAR_QUBE_URL/api/issues/search?createdAfter=2020-10-21&component=$SONAR_QUBE_PROJECT&severities=CRITICAL,BLOCKER&languages=java&types=VULNERABILITY&onComponentOnly=true)
+      - |
+        jq "{ \"messageType\": \"CodeScanReport\", \"reportType\": \"SONAR-QUBE\", \
+        \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S.%3NZ\"), \"source_repository\": env.CODEBUILD_SOURCE_REPO_URL, \
+        \"source_branch\": env.CODEBUILD_SOURCE_VERSION, \
+        \"build_id\": env.CODEBUILD_BUILD_ID, \
+        \"source_commitid\": env.CODEBUILD_RESOLVED_SOURCE_VERSION, \
+        \"report\": . }" sonarqube_scanreport.json > payload.json
+      - base64 -w 0 payload.json > payload_base64.txt
+      - "curl -s -u $SONAR_QUBE_KEY: $SONAR_QUBE_URL/api/qualitygates/project_status?projectKey=$SONAR_QUBE_PROJECT> /tmp/result.json"
+      - if [ $(jq -r '.projectStatus.status' /tmp/result.json) = ERROR ] ; then 
+          CODEBUILD_BUILD_SUCCEEDING=0 ; fi
+      - |
+        if ["$CODEBUILD_BUILD_SUCCEEDING" -eq 0  ]; then
+          aws lambda invoke --function-name ImportVulToSecurityHub --payload file://payload_base64.txt sonarqube_scan_report.json && echo "LAMBDA_SUCCEDED" || echo "LAMBDA_FAILED";
+          echo "in quality_status ERROR or WARN condition"
+          
+        elif [ $(jq -r '.projectStatus.status' /tmp/result.json) = OK ]; then
+          echo "in quality_status OK condition"
+        else
+          echo "in quality_status  unexpected condition"
+          
+        fi

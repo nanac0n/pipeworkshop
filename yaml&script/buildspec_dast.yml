@@ -1,0 +1,57 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - yum -q install -y jq
+      - echo "install phase....."
+  pre_build:
+    commands:
+      - echo "pre build phase....."
+  build:
+    commands:
+      - echo "build phase....."
+  post_build:
+    commands:
+      - instance_name="ZapTestInstance"
+      - instance_id=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${instance_name}" --query "Reservations[0].Instances[0].InstanceId" --output text --region ap-northeast-2)
+      - aws ssm send-command --document-name "AWS-RunShellScript" --targets "Key=instanceids,Values=${instance_id}" --parameters "commands=['aws s3 cp s3://zap-tbucket/webgoat-2023.6-SNAPSHOT.jar /home/ec2-user/webgoat-2023.6-SNAPSHOT.jar','aws s3 cp s3://zap-tbucket/report.py /home/ec2-user/report.py', 'aws s3 cp s3://zap-tbucket/install.py /home/ec2-user/install.py', 'sudo killall java', 'sleep 10', 'python3 /home/ec2-user/install.py', 'sleep 70', 'java -jar /home/ec2-user/webgoat-2023.6-SNAPSHOT.jar', 'sleep 150', 'python3 /home/ec2-user/report.py', 'sleep 300']" --region ap-northeast-2
+      - sleep 425
+      #s3에서 결과 파일 가져오기
+      - aws s3 cp s3://zap-tbucket/Report/zap-scan-report.json $CODEBUILD_SRC_DIR
+      - | 
+        riskdesc=$(jq -r '.site[0].alerts[0].riskdesc' $CODEBUILD_SRC_DIR/zap-scan-report.json)
+        if [[ $riskdesc == *"High"* ]]; then
+          high_alerts=1
+        else
+          high_alerts=0
+        fi
+
+        if [[ $riskdesc == *"Medium"* ]]; then
+          medium_alerts=1
+        else
+          medium_alerts=0
+        fi
+
+      - | 
+        jq "{ \"messageType\": \"CodeScanReport\", \"reportType\": \"OWASP-Zap\", \
+        \"createdAt\": $(date +\"%Y-%m-%dT%H:%M:%S.%3NZ\"), \"source_repository\": env.CODEBUILD_SOURCE_REPO_URL, \
+        \"source_branch\": env.CODEBUILD_SOURCE_VERSION, \
+        \"build_id\": env.CODEBUILD_BUILD_ID, \
+        \"source_commitid\": env.CODEBUILD_RESOLVED_SOURCE_VERSION, \
+        \"high_alerts\": $high_alerts, \
+        \"medium_alerts\": $medium_alerts, \
+        \"report\": . }" $CODEBUILD_SRC_DIR/zap-scan-report.json > payload.json
+      - base64 -w 0 payload.json > payload_base64.txt
+      # - aws lambda invoke --function-name ImportVulToSecurityHub --payload file://$CODEBUILD_SRC_DIR/payload_base64.txt zap_scan_report.json && echo "LAMBDA_SUCCEDED" || echo "LAMBDA_FAILED";
+      - |
+        if [[ $high_alerts -gt 0 ]]; then
+          echo "there are high or medium alerts.. failing the build"
+          aws lambda invoke --function-name ImportVulToSecurityHub --payload file://payload_base64.txt zap_scan_report.json && echo "LAMBDA_SUCCEEDED" || echo "LAMBDA_FAILED"
+        fi
+      - echo Build completed on `date`
+      #- |
+      #  aws lambda invoke \
+      #    --function-name YourLambdaFunctionName \
+      #    --invocation-type RequestResponse \
+      #    --log-type Tail \
+      #    s3://dast-hbucket/${report_filename}

@@ -158,6 +158,6 @@ module "lambda_function_existing_package_local" {
   timeout = 60
 
   create_package         = false
-  local_existing_package = "./lambdaFunc.zip"
+  local_existing_package = "./Import_to_securityhub.zip"
 
 }

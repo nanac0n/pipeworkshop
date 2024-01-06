@@ -65,30 +65,7 @@ resource "aws_s3_bucket_policy" "tf-cloudtrail-bucket-policy" {
   policy = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
 }
 
-data "aws_iam_policy_document" "tf-cloudtrail-bucket-policy" {
-  statement {
-    actions   = ["s3:GetBucketAcl"]
-    resources = [aws_s3_bucket.tf-cloudtrail-s3.arn]
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-  }
 
-  statement {
-    actions   = ["s3:PutObject"]
-    resources = ["${aws_s3_bucket.tf-cloudtrail-s3.arn}/*"]
-    condition {
-      test     = "StringEquals"
-      variable = "s3:x-amz-acl"
-      values   = ["bucket-owner-full-control"]
-    }
-    principals {
-      type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com"]
-    }
-  }
-}
 
 #로드 밸런서 보안 그룹 생성
 resource "aws_security_group" "tf-lb-sg"{
@@ -542,16 +519,7 @@ resource "aws_cloudwatch_log_resource_policy" "tf-cloudtrail-to-cloudwatch-log-p
   policy_document = data.aws_iam_policy_document.tf-cloudtrail-bucket-policy.json
 }
 
-data "aws_iam_policy_document" "tf-cloudtrail-to-cloudwatch-log-policy" {
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup"
-    ]
-    resources = ["${aws_cloudwatch_log_group.tf-cloudtrail-to-cloudwatch-log-group.arn}/*"] 
-  }
-}
+
 
 
 # CloudWatch Log Group
@@ -578,19 +546,7 @@ resource "aws_iam_role" "tf-cloudwatch-iam-role" {
   })
 }
 
-data "aws_iam_policy_document" "tf-cloudwatch-iam-policy" {
-  statement {
-    actions = [
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:CreateLogGroup"
-    ]
 
-    resources = [
-          "arn:aws:logs:*:*:log-group:*:*"
-    ]
-  }
-}
 
 resource "aws_iam_role_policy" "tf-cloudwatch-iam-policy" {
   name   = "cloudwatch-policy"
@@ -615,34 +571,7 @@ resource "aws_cloudtrail" "tf-cloudtrail" {
 
 
 
-#GuardDuty 생성
-data "aws_guardduty_detector" "existing" {
-}
-resource "aws_guardduty_detector" "DevSecOpsDetector" {
-  count = length(data.aws_guardduty_detector.existing.id) > 0 ? 0 : 1
 
-  enable = true
-
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
-
-  datasources {
-    s3_logs {
-      enable = true
-    }
-    kubernetes {
-      audit_logs {
-        enable = false
-      }
-    }
-    malware_protection {
-      scan_ec2_instance_with_findings {
-        ebs_volumes {
-          enable = true
-        }
-      }
-    }
-  }
-}
 
 
 
@@ -729,13 +658,13 @@ module "deploy_test"{
   source_repo_name   = "whs-repo-from-IaC"
   source_repo_branch = "master"
   create_new_repo    = true
-  repo_approvers_arn = "arn:aws:sts::851077919242:assumed-role/CodeCommitReview/" #Update ARN (IAM Role/User/Group) of Approval Members
+  repo_approvers_arn = "arn:aws:sts::${local.account_id}:assumed-role/CodeCommitReview/" #Update ARN (IAM Role/User/Group) of Approval Members
   create_new_role    = true
   
   stage_input = [
     { name = "build", category = "Build", owner = "AWS", provider = "CodeBuild", input_artifacts = "SourceOutput", output_artifacts = "BuildOutput" },
     { name = "sca", category = "Test", owner = "AWS", provider = "CodeBuild", input_artifacts = "BuildOutput", output_artifacts = "ScaOutput" },
-    {name = "sast", category = "Test", owner = "AWS", provider = "CodeBuild", input_artifacts = "BuildOutput", output_artifacts = "SastOutput" },
+    { name = "sast", category = "Test", owner = "AWS", provider = "CodeBuild", input_artifacts = "BuildOutput", output_artifacts = "SastOutput" },
     { name = "dast", category = "Test", owner = "AWS", provider = "CodeBuild", input_artifacts = "BuildOutput", output_artifacts = "DastOutput" }
   ]
   build_projects = ["build", "sca", "sast", "dast"]
