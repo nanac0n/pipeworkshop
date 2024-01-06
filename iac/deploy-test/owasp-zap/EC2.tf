@@ -7,7 +7,7 @@ data "aws_instance" "zap_instance_id" {
 resource "aws_instance" "zap_instance" {
   ami           = "ami-05e02e6210658716f"
   instance_type = "t2.medium"
-  key_name      = var.your_key_pair_name
+  key_name      = "whs-iac-pair"
   
   metadata_options {
         http_tokens = "required"
