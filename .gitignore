@@ -1,3 +1,8 @@
 .terraform/*
 .terraform
 iac/jhs/.terraform/*
+
+.DS_Store
+._.DS_Store
+**/.DS_Store
+**/._.DS_Store
